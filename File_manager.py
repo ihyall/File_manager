@@ -39,7 +39,7 @@ def change_path(path):
             print(f'\x1b[1;31mPath {current_path} does not exist, you were moved to the main path.\x1b[0m')
             current_path = main_path
             return False
-    return True
+    return current_path
 
 
 def create_file(name):
@@ -79,9 +79,12 @@ def delete_file(name):
 
 
 def copy_file(name, path):
+    global current_path
     if name in os.listdir(current_path):
-        if os.access(mode=os.F_OK):
-            if name not in os.listdir(main_path+path):
+        if os.access(current_path, mode=os.F_OK):
+            cur1 = current_path
+            if name not in os.listdir(change_path(path)):
+                current_path = cur1
                 with open(current_path+'\\'+name, mode='r') as f:
                     a = f.readlines()
                     change_path(path)
@@ -132,7 +135,8 @@ def sign_in(username, password):
         create_folder(username)
         change_path('\\'+username)
         create_file('user_data.txt')
-        write_into_file('user_data.txt', f'{username}\n{password}')
+        with open(current_path+'\\'+'user_data.txt', mode='w') as f:
+            f.write(username+'\n'+password)
         log_in(username, password)
     else:
         print(f'\x1b[1;31mUser {username} already exists.\x1b[0m')
